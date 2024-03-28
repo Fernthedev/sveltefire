@@ -14,7 +14,7 @@
     }
 </script>
 
-{#if $store !== undefined}
+{#if $store !== undefined && $store !== null}
     <slot link={$store} ref={store.reference} {storage}/>
 {:else}
     <slot name="loading" />

@@ -43,7 +43,7 @@ export function storageListStore(storage, reference, startWith = defaultListResu
  * @param  {FirebaseStorage} storage firebase storage instance
  * @param  {string|StorageReference} reference file or storage item path or reference
  * @param  {null} startWith optional default data
- * @returns a store with the list result
+ * @returns a store with the list result. null means loading and undefined means no value
  */
 export function downloadUrlStore(storage, reference, startWith = null) {
     // Fallback for SSR
@@ -65,8 +65,15 @@ export function downloadUrlStore(storage, reference, startWith = null) {
     }
     const storageRef = typeof reference === "string" ? ref(storage, reference) : reference;
     const { subscribe } = readable(startWith, (set) => {
-        getDownloadURL(storageRef).then((snapshot) => {
+        getDownloadURL(storageRef)
+            .then((snapshot) => {
+            // object found
             set(snapshot);
+        })
+            .catch((error) => {
+            // object not found
+            console.error(error);
+            return set(undefined);
         });
     });
     return {

@@ -4,7 +4,7 @@ declare const __propDef: {
     props: {
         ref: string | StorageReference;
         children?: ((this: void, args_0: {
-            link: string | null;
+            link: string | null | undefined;
             ref: StorageReference | null;
             storage: FirebaseStorage | undefined;
         }) => typeof import("svelte").SnippetReturn & {
