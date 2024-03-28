@@ -8,7 +8,7 @@ import type {
 } from "firebase/firestore";
 
 interface DocStore<T> {
-  subscribe: (cb: (value: T | null) => void) => void | (() => void);
+  subscribe: (cb: (value: T | null) => void) => void;
   ref: DocumentReference<T> | null;
   id: string;
 }
@@ -70,7 +70,7 @@ export function docStore<T = any>(
 }
 
 interface CollectionStore<T> {
-  subscribe: (cb: (value: T | []) => void) => void | (() => void);
+  subscribe: (cb: (value: T[] | [] | null) => void) => void;
   ref: CollectionReference<T> | Query<T> | null;
 }
 
@@ -83,8 +83,8 @@ interface CollectionStore<T> {
 export function collectionStore<T>(
   firestore: Firestore,
   ref: string | Query<T> | CollectionReference<T>,
-  startWith: T[] = []
-): CollectionStore<T[]> {
+  startWith?: T[]
+): CollectionStore<T> {
   let unsubscribe: () => void;
 
   // Fallback for SSR
@@ -108,7 +108,10 @@ export function collectionStore<T>(
     };
   }
 
-  const colRef = typeof ref === "string" ? collection(firestore, ref) : ref;
+  const colRef =
+    typeof ref === "string"
+      ? (collection(firestore, ref) as CollectionReference<T>)
+      : ref;
 
   const { subscribe } = writable(startWith, (set) => {
     unsubscribe = onSnapshot(colRef, (snapshot) => {
