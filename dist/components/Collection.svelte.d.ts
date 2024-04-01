@@ -1,11 +1,12 @@
 import { SvelteComponent } from "svelte";
 import type { CollectionReference, DocumentData, Firestore, Query } from "firebase/firestore";
+import { type CollectionWrappedData } from "../stores/firestore.js";
 declare class __sveltets_Render<Data extends DocumentData> {
     props(): {
         ref: string | CollectionReference<Data, DocumentData> | Query<Data, DocumentData>;
-        startWith?: Data[] | undefined;
+        startWith?: CollectionWrappedData<Data>[] | undefined;
         children?: ((this: void, args_0: {
-            data: [] | Data[] | null;
+            data: [] | CollectionWrappedData<Data>[] | null;
             ref: CollectionReference<Data, DocumentData> | Query<Data, DocumentData> | null;
             count: number;
             firestore: Firestore | undefined;
@@ -18,7 +19,7 @@ declare class __sveltets_Render<Data extends DocumentData> {
     };
     slots(): {
         default: {
-            data: Data[];
+            data: CollectionWrappedData<Data>[];
             ref: CollectionReference<Data, DocumentData> | Query<Data, DocumentData> | null;
             count: number;
             firestore?: Firestore | undefined;

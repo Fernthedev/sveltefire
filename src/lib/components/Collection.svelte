@@ -5,11 +5,11 @@
     Firestore,
     Query,
   } from "firebase/firestore";
-  import { collectionStore } from "../stores/firestore.js";
+  import { collectionStore, type CollectionWrappedData } from "../stores/firestore.js";
   import { getFirebaseContext } from "../stores/sdk.js";
 
   export let ref: string | CollectionReference<Data> | Query<Data>;
-  export let startWith: Data[] | undefined = undefined;
+  export let startWith: CollectionWrappedData<Data>[] | undefined = undefined;
 
   const { firestore } = getFirebaseContext();
 
@@ -17,7 +17,7 @@
 
   interface $$Slots {
     default: {
-      data: Data[];
+      data: CollectionWrappedData<Data>[];
       ref: CollectionReference<Data> | Query<Data> | null;
       count: number;
       firestore?: Firestore;

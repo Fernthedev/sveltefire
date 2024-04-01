@@ -5,6 +5,7 @@ import type {
   CollectionReference,
   DocumentReference,
   Firestore,
+  DocumentSnapshot,
 } from "firebase/firestore";
 
 interface DocStore<T> {
@@ -56,7 +57,7 @@ export function docStore<T = any>(
 
   const { subscribe } = writable<T | null>(startWith, (set) => {
     unsubscribe = onSnapshot(docRef, (snapshot) => {
-      set((snapshot.data() as T) ?? null);
+      set(snapshot.data() ?? null);
     });
 
     return () => unsubscribe();
@@ -69,8 +70,13 @@ export function docStore<T = any>(
   };
 }
 
+export type CollectionWrappedData<T> = T & {
+  id: string,
+  ref: DocumentReference<T>
+}
+
 interface CollectionStore<T> {
-  subscribe: (cb: (value: T[] | [] | null) => void) => void;
+  subscribe: (cb: (value: CollectionWrappedData<T>[] | [] | null) => void) => void;
   ref: CollectionReference<T> | Query<T> | null;
 }
 
@@ -83,7 +89,7 @@ interface CollectionStore<T> {
 export function collectionStore<T>(
   firestore: Firestore,
   ref: string | Query<T> | CollectionReference<T>,
-  startWith?: T[]
+  startWith?: CollectionWrappedData<T>[]
 ): CollectionStore<T> {
   let unsubscribe: () => void;
 
@@ -116,7 +122,7 @@ export function collectionStore<T>(
   const { subscribe } = writable(startWith, (set) => {
     unsubscribe = onSnapshot(colRef, (snapshot) => {
       const data = snapshot.docs.map((s) => {
-        return { id: s.id, ref: s.ref, ...s.data() } as T;
+        return { id: s.id, ref: s.ref, ...s.data() } satisfies CollectionWrappedData<T>;
       });
       set(data);
     });
